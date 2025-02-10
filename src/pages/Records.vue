@@ -23,6 +23,10 @@ const navigateTo = (path: string) => {
 	router.push(path);
 };
 
+const openRecordDetails = (recordID: string) => {
+	navigateTo(`/records/${recordID}`);
+};
+
 const getRecords = async () => {
 	isLoading.value = true;
 	try {
@@ -52,6 +56,7 @@ watch(() => route.query.page, getRecords);
 				<table>
 					<thead>
 						<tr>
+							<th></th>
 							<th>Date</th>
 							<th>Server</th>
 							<th>Result</th>
@@ -66,6 +71,11 @@ watch(() => route.query.page, getRecords);
 					</thead>
 					<tbody>
 						<tr v-for="record in records" :key="record.id">
+							<td>
+								<button @click="openRecordDetails(record.id)" class="btn">
+									Details
+								</button>
+							</td>
 							<td>{{ new Date(record.matchInfo.timeStamp).toLocaleDateString() }}</td>
 							<td>{{ record.matchInfo.isSolo ? "Solo" : record.matchInfo.serverName ?? record.matchInfo.serverIP }}</td>
 							<td>{{ record.matchInfo.isVictory ? "Win" : `Defeat @${record.matchInfo.defeatWave}` }}</td>
@@ -106,5 +116,17 @@ table td {
 	border-bottom: 1px solid #555;
 	text-align: left;
 	max-width: 450px;
+}
+
+.btn {
+  background-color: #8B0000 ;
+  color: white;
+  border: 1px solid #600000;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: #A52A2A;
 }
 </style>
