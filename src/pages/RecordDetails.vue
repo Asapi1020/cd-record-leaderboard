@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CDAPIClient } from '@this/lib/apiClient';
-import { perkData, resolveWeaponData } from '@this/lib/kfClassNameResolver';
+import { perkData, resolveWeaponData, resolveZedData } from '@this/lib/kfClassNameResolver';
 import type { Record } from '@this/lib/type';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -25,8 +25,13 @@ const getRecord = async () => {
 }
 
 const resolveWeaponDataDisplay = (weaponDefClass: string) => {
-	const weaponData = resolveWeaponData(weaponDefClass);
-	return weaponData.name;
+	const {name, image} = resolveWeaponData(weaponDefClass);
+	return image ? `<img src="${image}" alt="Weapon Icon" class="weapon-icon">${name}` : name;
+}
+
+const resolveZedDataDisplay = (zedClass: string) => {
+	const {name, image} = resolveZedData(zedClass);
+	return image ? `<img src="${image}" alt="Zed Icon" class="zed-icon">${name}` : name;
 }
 
 onMounted(getRecord);
@@ -236,6 +241,9 @@ onMounted(getRecord);
 									<tr>
 										<td>HS Accuracy</td><td>{{ stat.shotsHit ? ((stat.headShots / stat.shotsHit) * 100).toFixed(2) : 0 }} %</td>
 									</tr>
+									<tr>
+										<td>Deaths</td><td>{{ stat.deaths }}</td>
+									</tr>
 								</tbody>
 							</table>
 						</v-card-text>
@@ -256,7 +264,7 @@ onMounted(getRecord);
 								</thead>
 								<tbody>
 									<tr v-for="(weaponDamage, index) in stat.weaponDamages" :key="index">
-										<td>{{ resolveWeaponDataDisplay(weaponDamage.weaponDefClass) }}</td>
+										<td v-html="resolveWeaponDataDisplay(weaponDamage.weaponDefClass)"></td>										
 										<td class="number">{{ weaponDamage.damageAmount.toLocaleString() }}</td>
 										<td class="number">{{ weaponDamage.headShots.toLocaleString() }}</td>
 										<td class="number">{{ weaponDamage.largeZedKills.toLocaleString() }}</td>
@@ -277,7 +285,7 @@ onMounted(getRecord);
 								</thead>
 								<tbody>
 									<tr v-for="(zedKill, index) in stat.zedKills" :key="index">
-										<td>{{ zedKill.zedClass }}</td>
+										<td v-html="resolveZedDataDisplay(zedKill.zedClass)"></td>
 										<td class="number">{{ zedKill.killCount.toLocaleString() }}</td>
 									</tr>
 								</tbody>
@@ -292,6 +300,7 @@ onMounted(getRecord);
         </v-container>
 	</v-main>
 </template>
+
 <style scoped lang="scss">
 .dark-red-background {
     background-color: #8B0000;
@@ -310,11 +319,15 @@ table td {
 table td.number {
 	text-align: right;
 }
+</style>
 
-.perk-icon {
+<style lang="scss">
+.perk-icon,
+.zed-icon,
+.weapon-icon {
 	height: 1.5em;
 	width: auto;
 	vertical-align: middle;
-	margin-right: 4px;
+	margin-right: 6px;
 }
 </style>

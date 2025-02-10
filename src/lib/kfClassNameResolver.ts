@@ -12,22 +12,22 @@ export const perkData: {[key: string]: [string, string]} = {
 }
 
 export const weaponData: {[key: string]: [string, string]} = {
-	"9mm": ["9mm Pistol", ""],
-	"9mmDual": ["Dual 9mm Pistols", ""],
-	"AA12": ["AA-12 Auto Shotgun", ""],
-	"AbominationAxe": ["Battle Axe", ""],
-	"AF2011": ["AF2011-A1", ""],
-	"AF2011Dual": ["Dual AF2011-A1", ""],
-	"Ak12": ["Kalashinikov AK-12", ""],
-	"AR15": ["AR-15 Varmint Rifle", ""],
-	"AutoTurret": ["Sentinel", ""],
-	"AutoTurretWeapon": ["Sentinel", ""],
-	"BladedPistol": ["Piranha Pistol", ""],
-	"Blunderbuss": ["Blunderbuss", ""],
-	"Bullpup": ["SA80 L85A2 Bullpup", ""],
+	"9mm": ["9mm Pistol", "https://wiki.killingfloor2.com/images/1/13/KF29mm_Pistol.png"],
+	"9mmDual": ["Dual 9mm Pistols", "https://wiki.killingfloor2.com/images/thumb/c/cf/KF2Dual_9mm_Pistols.png"],
+	"AA12": ["AA-12 Auto Shotgun", "https://wiki.killingfloor2.com/images/thumb/4/44/KF2AA-12_Auto_Shotgun.png/326px-KF2AA-12_Auto_Shotgun.png"],
+	"AbominationAxe": ["Battleaxe", "https://wiki.killingfloor2.com/images/thumb/e/ef/Kf2_abomi_axe.png/326px-Kf2_abomi_axe.png"],
+	"AF2011": ["AF2011-A1", "https://wiki.killingfloor2.com/images/thumb/0/02/UI_WeaponSelect_AF2011.png/326px-UI_WeaponSelect_AF2011.png"],
+	"AF2011Dual": ["Dual AF2011-A1s", "https://wiki.killingfloor2.com/images/thumb/7/78/UI_WeaponSelect_DualAF2011.png/326px-UI_WeaponSelect_DualAF2011.png"],
+	"Ak12": ["Kalashinikov AK-12", "https://wiki.killingfloor2.com/images/thumb/7/78/KF2Kalashnikov_AK12.png/326px-KF2Kalashnikov_AK12.png"],
+	"AR15": ["AR-15 Varmint Rifle", "https://wiki.killingfloor2.com/images/thumb/f/fc/KF2AR-15_%27Varmint_Rifle%27.png/326px-KF2AR-15_%27Varmint_Rifle%27.png"],
+	"AutoTurret": ["Sentinel", "https://wiki.killingfloor2.com/images/thumb/a/ab/Kf2_droneturret_bar.png/326px-Kf2_droneturret_bar.png"],
+	"AutoTurretWeapon": ["Sentinel", "https://wiki.killingfloor2.com/images/thumb/a/ab/Kf2_droneturret_bar.png/326px-Kf2_droneturret_bar.png"],
+	"BladedPistol": ["Piranha Pistol", "https://wiki.killingfloor2.com/images/thumb/a/a0/Kf2_weap_piranha_card.png/326px-Kf2_weap_piranha_card.png"],
+	"Blunderbuss": ["Blunderbuss", "https://wiki.killingfloor2.com/images/thumb/2/25/Kf2_blunderbuss_card.png/326px-Kf2_blunderbuss_card.png"],
+	"Bullpup": ["SA80 L85A2 Bullpup", "https://wiki.killingfloor2.com/images/thumb/3/39/KF2SA80_L85A2_Bullpup.png/326px-KF2SA80_L85A2_Bullpup.png"],
 	"C4": ["C4 Explosives", ""],
 	"CaulkBurn": ["Caulk n' Burn", ""],
-	"CenterfireMB464": ["SPX 464 Centerfire", ""],
+	"CenterfireMB464": ["SPX 464 Centerfire", "https://wiki.killingfloor2.com/images/thumb/e/e0/KF2_Weapon_SPX464Centerfire.png/326px-KF2_Weapon_SPX464Centerfire.png"],
 	"ChainBat": ["Road Redeemer", ""],
 	"ChiappaRhino": ["Rhino", ""],
 	"ChiappaRhinoDual": ["Dual Rhino", ""],
@@ -35,13 +35,13 @@ export const weaponData: {[key: string]: [string, string]} = {
 	"Colt1911Dual": ["Dual M1911 Pistols", ""],
 	"CompoundBow": ["Compound Bow", ""],
 	"Crossbow": ["Crossbow", ""],
-	"Crovel": ["Crovel Survival Tool", ""],
-	"Deagle": [".50 Desert Eagle", ""],
+	"Crovel": ["Crovel Survival Tool", "https://wiki.killingfloor2.com/images/thumb/a/ac/KF2Crovel_Survival_Tool.png"],
+	"Deagle": [".50 Desert Eagle", "https://wiki.killingfloor2.com/images/thumb/9/95/KF250_Desert_Eagle.png/326px-KF250_Desert_Eagle.png"],
 	"DeagleDual": ["Dual .50 Desert Eagles", ""],
 	"Doshinegun": ["Doshinegun", ""],
 	"DoubleBarrel": ["Double-barreled Boomstick", ""],
 	"DragonsBreath": ["Dragonsbreath", ""],
-	"DualBladed": ["Dual Piranha Pistols", ""],
+	"DualBladed": ["Dual Piranha Pistols", "https://wiki.killingfloor2.com/images/thumb/8/81/Kf2_weap_piranhadual_card.png/326px-Kf2_weap_piranhadual_card.png"],
 	"ElephantGun": ["Doomstick", ""],
 	"Eviscerator": ["Eviscerator", ""],
 	"FAMAS": ["FAMAS Masterkey", ""],
@@ -50,24 +50,24 @@ export const weaponData: {[key: string]: [string, string]} = {
 	"FlareGun": ["Spitfire", ""],
 	"FlareGunDual": ["Dual Spitfires", ""],
 	"FreezeThrower": ["Freezethrower", ""],
-	"FNFal": ["FN FAL ACOG", ""],
+	"FNFal": ["FN FAL ACOG", "https://wiki.killingfloor2.com/images/thumb/6/63/UI_WeaponSelect_FNFAL.png/326px-UI_WeaponSelect_FNFAL.png"],
 	"G18": ["Riot Shield & Glock 18", ""],
 	"G36C": ["G36C Assault Rifle", ""],
 	"GravityImploder": ["Gravity Imploder", ""],
 	"Grenade_Berserker": ["EMP Grenade", ""],
-	"Grenade_Commando": ["HE Grenade", ""],
+	"Grenade_Commando": ["HE Grenade", "https://wiki.killingfloor2.com/images/thumb/1/1d/KF2HE_Grenade.png/326px-KF2HE_Grenade.png"],
 	"Grenade_Demo": ["1/2 Stick of Dynamite", ""],
 	"Greande_Firebug": ["Molotov Cocktail", ""],
-	"Grenade_Gunslinger": ["Nail Bomb", ""],
-	"Grenade_Medic": ["Healing Grenade", ""],
-	"Grenade_Sharpshooter": ["Freeze Grenade", ""],
+	"Grenade_Gunslinger": ["Nail Bomb", "https://wiki.killingfloor2.com/images/thumb/6/64/KF2Nail_Bomb.png/326px-KF2Nail_Bomb.png"],
+	"Grenade_Medic": ["Healing Grenade", "https://wiki.killingfloor2.com/images/thumb/d/d7/KF2Medic_Grenade.png/326px-KF2Medic_Grenade.png"],
+	"Grenade_Sharpshooter": ["Freeze Grenade", "https://wiki.killingfloor2.com/images/thumb/2/20/KF2Freeze_Grenade.png/326px-KF2Freeze_Grenade.png"],
 	"Grenade_Support": ["Frag Grenade", ""],
 	"Grenade_SWAT": ["FlashBang", ""],
-	"Healer": ["Healer Syringe", ""],
-	"Healthrower_HRG": ["HRG Healthrower", ""],
+	"Healer": ["Medical Syringe", "https://wiki.killingfloor2.com/images/thumb/2/21/KF2_Medical_Syringe.png/326px-KF2_Medical_Syringe.png"],
+	"Healthrower_HRG": ["HRG Healthrower", "https://wiki.killingfloor2.com/images/thumb/f/f1/Kf2_hrg_healthrower.png/326px-Kf2_hrg_healthrower.png"],
 	"Hemogoblin": ["Hemogoblin", ""],
 	"HK_UMP": ["Hechler & Koch UMP", ""],
-	"HRG_93R": ["HRG 93R Pistol", ""],
+	"HRG_93R": ["HRG 93R Pistol", "https://wiki.killingfloor2.com/images/thumb/e/e8/Kf2_weap_93r_card.png/326px-Kf2_weap_93r_card.png"],
 	"HRG_93R_Dual": ["Dual HRG 93R Pistols", ""],
 	"HRG_BallisticBouncer": ["HRG Ballistic Bouncer", ""],
 	"HRG_BarrierRifle": ["HRG Bastion", ""],
@@ -102,7 +102,7 @@ export const weaponData: {[key: string]: [string, string]} = {
 	"Kriss": ["Kriss SMG", ""],
 	"LazerCutter": ["Killerwatt", ""],
 	"M4": ["M4 Combat Shotgun", ""],
-	"M14EBR": ["M14 EBR", ""],
+	"M14EBR": ["M14 EBR", "https://wiki.killingfloor2.com/images/thumb/b/b1/KF2M14_EBR.png/326px-KF2M14_EBR.png"],
 	"M16M203": ["M16 M203 Assault Rifle", ""],
 	"M32": ["M32 Grenade Launcher", ""],
 	"M79": ["M79 Grenade Launcher", ""],
@@ -111,9 +111,9 @@ export const weaponData: {[key: string]: [string, string]} = {
 	"MaceAndShield": ["Bone Crusher", ""],
 	"MB500": ["SG 500 Pump-Action", ""],
 	"MedicBat": ["Hemoclobber", ""],
-	"MedicPistol": ["HMTech-101 Pistol", ""],
-	"MedicRifle": ["HMTech-401 Assault Rifle", ""],
-	"MedicRifleGrenadeLauncher": ["HMTech-501 Grenade Rifle", ""],
+	"MedicPistol": ["HMTech-101 Pistol", "https://wiki.killingfloor2.com/images/thumb/f/fa/KF2HMTECH-101_Pistol.png/326px-KF2HMTECH-101_Pistol.png"],
+	"MedicRifle": ["HMTech-401 Assault Rifle", "https://wiki.killingfloor2.com/images/thumb/b/bd/KF2HMTECH-401_Assault_Rifle.png/326px-KF2HMTECH-401_Assault_Rifle.png"],
+	"MedicRifleGrenadeLauncher": ["HMTech-501 Grenade Rifle", "https://wiki.killingfloor2.com/images/thumb/7/74/UI_WeaponSelect_MedicGrenadeLauncher.png/326px-UI_WeaponSelect_MedicGrenadeLauncher.png"],
 	"MedicShotgun": ["HMTech-301 Shotgun", ""],
 	"MedicSMG": ["HMTech-201 SMG", ""],
 	"MG3": ["MG3 Shredder", ""],
@@ -134,8 +134,8 @@ export const weaponData: {[key: string]: [string, string]} = {
 	"PowerGloves": ["Static Strikers", ""],
 	"Pulverizer": ["Pulverizer", ""],
 	"RailGun": ["Rail Gun", ""],
-	"Remington1858": ["Remington 1858 Revolver", ""],
-	"Remington1858Dual": ["Dual Remington 1858 Revolvers", ""],
+	"Remington1858": ["1858 Revolver", "https://wiki.killingfloor2.com/images/thumb/0/00/KF21858_Revolver.png/326px-KF21858_Revolver.png"],
+	"Remington1858Dual": ["Dual 1858 Revolvers", ""],
 	"Rifle_FrostShotgunAxe": ["Frost Fang", ""],
 	"RPG7": ["RPG-7", ""],
 	"SCAR": ["SCAR-H Assault Rifle", ""],
@@ -145,14 +145,14 @@ export const weaponData: {[key: string]: [string, string]} = {
 	"Shotgun_S12": ["S12 Shockgun",	""],
 	"ShrinkRayGun": ["Reducto Ray", ""],
 	"Stoner63A": ["Stoner 63A LMG", ""],
-	"SW500": [".500 Magnum Revolver", ""],
+	"SW500": [".500 Magnum Revolver", "https://wiki.killingfloor2.com/images/thumb/7/77/KF2500_Magnum_Revolver.png/326px-KF2500_Magnum_Revolver.png"],
 	"SW500_HRG": ["HRG Backshot", ""],
 	"SW500Dual": ["Dual .500 Magnum Revolvers", ""],
 	"SW500Dual_HRG": ["Dual HRG Backshots", ""],
 	"ThermiteBore": ["Thermite Bore", ""],
 	"Thompson": ["Tommy Gun", ""],
 	"Welder": ["Welder", ""],
-	"Winchester1894": ["Winchester 1894", ""],
+	"Winchester1894": ["Winchester 1894", "https://wiki.killingfloor2.com/images/thumb/e/e3/KF2Winchester_1894.png/326px-KF2Winchester_1894.png"],
 	"ZedMKIII": ["Z.E.D. MKIII", ""],
 	"Zweihander": ["Zweihander", ""],
 }
@@ -162,8 +162,8 @@ export interface ClassNameResolver {
 	image: string;
 }
 
-export const resolveWeaponData = (className: string): ClassNameResolver => {
-	const parsed = className.split(".");
+export const resolveWeaponData = (path: string): ClassNameResolver => {
+	const parsed = path.split(".");
 	if(parsed.length < 2){
 		return {
 			name: "Unknown",
@@ -171,9 +171,54 @@ export const resolveWeaponData = (className: string): ClassNameResolver => {
 		};
 	}
 
-	const data = weaponData[parsed[1].split("Def_")[1]];
+	const [packageName, className] = parsed;
+	const data = weaponData[className.split("Def_")[1]];
 	return {
-		name: data ? data[0] + (!parsed[0] && parsed[0] !== "KFGame" ? ` (${parsed[0]})` : "") : `Unknown (${parsed[1]})`,
+		name: data ? data[0] + (packageName !== "KFGame" ? ` (${packageName})` : "") : `Unknown (${path})`,
+		image: data ? data[1] : "",
+	}
+}
+
+export const zedData: {[key: string]: [string, string]} = {
+	"ZedBloat": ["Bloat", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_bloat.png?raw=true"],
+	"ZedBloatKing": ["Abomination", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_abomination.png?raw=true"],
+	"ZedClot_Alpha": ["Alpha Clot", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_alphaclot.png?raw=true"],
+	"ZedClot_AlphaKing": ["Rioter", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_rioter.png?raw=true"],
+	"ZedClot_Cyst": ["Cyst", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_cyst.png?raw=true"],
+	"ZedClot_Slasher": ["Slasher", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_slasher.png?raw=true"],
+	"ZedCrawler": ["Crawler", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_crawler.png?raw=true"],
+	"ZedCrawlerKing": ["Elite Crawler", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_elitecrawler.png?raw=true"],
+	"ZedDAR_EMP": ["EDAR Trapper", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_edar_emp.png?raw=true"],
+	"ZedDAR_Laser": ["EDAR Blaster", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_edar_laser.png?raw=true"],
+	"ZedDAR_Rocket": ["EDAR Bomber", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_edar_rocket.png?raw=true"],
+	"ZedFleshpound": ["Fleshpound", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_fleshpound.png?raw=true"],
+	"ZedFleshpoundKing": ["King Fleshpound", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_kingfleshpound.png?raw=true"],
+	"ZedFleshpoundMini": ["Quarter Pound", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_quarterpound.png?raw=true"],
+	"ZedGorefast": ["Gorefast", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_gorefast.png?raw=true"],
+	"ZedGorefastDualBlade": ["Gorefiend", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_gorefiend.png?raw=true"],
+	"ZedHans": ["Dr. Hans Volter", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_hans.png?raw=true"],
+	"ZedHansClot": ["Hans Clot", ""],
+	"ZedHusk": ["Husk", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_husk.png?raw=true"],
+	"ZedMatriarch": ["Matriarch", "https://wiki.killingfloor2.com/images/thumb/4/40/Kf2_matriarch_icon.png/120px-Kf2_matriarch_icon.png"],
+	"ZedPatriarch": ["Patriarch", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_patriarch.png?raw=true"],
+	"ZedScrake": ["Scrake", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_scrake.png?raw=true"],
+	"ZedSiren": ["Siren", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_siren.png?raw=true"],
+	"ZedStalker": ["Stalker", "https://github.com/tamari92/spawncycler/blob/main/src/img/icon_stalker.png?raw=true"],
+}
+
+export const resolveZedData = (path: string): ClassNameResolver => {
+	const parsed = path.split(".");
+	if(parsed.length < 2){
+		return {
+			name: "Unknown",
+			image: "",
+		};
+	}
+
+	const [packageName, className] = parsed;
+	const data = zedData[className.split("Pawn_")[1].replace("_Regular", "").replace("_NRS", "").replace("_RS", "")];
+	return {
+		name: data ? data[0] + (packageName !== "kfgamecontent" && packageName !== "CombinedCD2" ? ` (${packageName})` : "") : `Unknown (${path})`,
 		image: data ? data[1] : "",
 	}
 }
