@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CDAPIClient } from '@this/lib/apiClient';
+import { perkData, resolveWeaponData } from '@this/lib/kfClassNameResolver';
 import type { Record } from '@this/lib/type';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -21,6 +22,11 @@ const getRecord = async () => {
 	} catch(error) {
 		console.error(error);
 	}
+}
+
+const resolveWeaponDataDisplay = (weaponDefClass: string) => {
+	const weaponData = resolveWeaponData(weaponDefClass);
+	return weaponData.name;
 }
 
 onMounted(getRecord);
@@ -174,6 +180,17 @@ onMounted(getRecord);
 						</v-card-text>
 					</v-card>
 				</v-col>
+				<v-col v-if="record.matchInfo.cheatMessages.length > 0" cols="12">
+					<v-card>
+						<v-card-title>Cheat Messages</v-card-title>
+						<v-card-text>
+							<span v-for="(message, index) in record.matchInfo.cheatMessages" :key="index">
+								{{ message }}
+								<span v-if="index < record.matchInfo.cheatMessages.length - 1">, </span>
+							</span>
+						</v-card-text>
+					</v-card>
+				</v-col>
 				<v-col cols="12">
 					<v-card class="dark-red-background">
 						<v-card-title>Player Stats</v-card-title>
@@ -192,7 +209,11 @@ onMounted(getRecord);
 							<table>
 								<tbody>
 									<tr>
-										<td>Perk</td><td>{{ stat.perkClass }}</td>
+										<td>Perk</td>
+										<td>
+											<img :src="perkData[stat.perkClass.toLowerCase()][1]" alt="Perk Icon" class="perk-icon">
+											{{ perkData[stat.perkClass.toLowerCase()][0] }}
+										</td>
 									</tr>
 									<tr>
 										<td>Damage Dealt</td><td>{{ stat.damageDealt.toLocaleString() }}</td>
@@ -235,7 +256,7 @@ onMounted(getRecord);
 								</thead>
 								<tbody>
 									<tr v-for="(weaponDamage, index) in stat.weaponDamages" :key="index">
-										<td>{{ weaponDamage.weaponDefClass }}</td>
+										<td>{{ resolveWeaponDataDisplay(weaponDamage.weaponDefClass) }}</td>
 										<td class="number">{{ weaponDamage.damageAmount.toLocaleString() }}</td>
 										<td class="number">{{ weaponDamage.headShots.toLocaleString() }}</td>
 										<td class="number">{{ weaponDamage.largeZedKills.toLocaleString() }}</td>
@@ -288,5 +309,12 @@ table td {
 
 table td.number {
 	text-align: right;
+}
+
+.perk-icon {
+	height: 1.5em;
+	width: auto;
+	vertical-align: middle;
+	margin-right: 4px;
 }
 </style>
