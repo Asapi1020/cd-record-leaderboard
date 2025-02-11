@@ -1,10 +1,10 @@
-import type { Record } from "./type";
+import type { Record, SteamAccount } from "./type";
 
 export class CDAPIClient {
 	private apiURL: string;
-	
-	constructor(){
-		if(!import.meta.env.VITE_CD_API_URL){
+
+	constructor() {
+		if (!import.meta.env.VITE_CD_API_URL) {
 			throw new Error("CD API URL is undefined");
 		}
 
@@ -13,17 +13,17 @@ export class CDAPIClient {
 
 	public async getRecord(id: string): Promise<Record> {
 		const response = await this.get(`/records/${id}`);
-		if(!response.ok){
+		if (!response.ok) {
 			console.error(response);
 			throw new Error("HTTP Error");
 		}
-		const data = await  response.json()
+		const data = await response.json();
 		return data.data;
 	}
 
 	public async getRecords(page: number): Promise<[Record[], number]> {
 		const response = await this.get(`/records?page=${page}`);
-		if(!response.ok){
+		if (!response.ok) {
 			console.error(response);
 			throw new Error("HTTP Error");
 		}
@@ -31,7 +31,17 @@ export class CDAPIClient {
 		return [data.data, data.total];
 	}
 
-	private async get(path: string){
+	public async getPlayerData(steamIDs: string[]): Promise<SteamAccount[]> {
+		const response = await this.get(`/players?id=${steamIDs.join(",")}`);
+		if (!response.ok) {
+			console.error(response);
+			throw new Error("HTTP Error");
+		}
+		const data = await response.json();
+		return data;
+	}
+
+	private async get(path: string) {
 		return await fetch(`${this.apiURL}/api${path}`);
 	}
 }

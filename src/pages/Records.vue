@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
-import type { Record } from '@this/lib/type';
-import { CDAPIClient } from '@this/lib/apiClient';
-import { useRoute, useRouter } from 'vue-router';
+import { CDAPIClient } from "@this/lib/apiClient";
+import type { Record } from "@this/lib/type";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const apiClient = new CDAPIClient();
 const route = useRoute();
@@ -16,7 +16,7 @@ const totalRecordsNum = ref<number>(0);
 const isLoading = ref<boolean>(false);
 
 const onPageChange = (newPage: number) => {
-	router.push({query: {...route.query, page: newPage}});
+	router.push({ query: { ...route.query, page: newPage } });
 };
 
 const navigateTo = (path: string) => {
@@ -32,12 +32,12 @@ const getRecords = async () => {
 	try {
 		const fetchedRecords = await apiClient.getRecords(page.value);
 		[records.value, totalRecordsNum.value] = fetchedRecords;
-	} catch(error) {
+	} catch (error) {
 		console.error(error);
 	} finally {
 		isLoading.value = false;
 	}
-}
+};
 
 onMounted(getRecords);
 watch(() => route.query.page, getRecords);

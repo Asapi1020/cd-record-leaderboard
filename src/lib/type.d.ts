@@ -77,3 +77,10 @@ export interface Record {
 	matchInfo: MatchInfo;
 	userStats: UserStats[];
 }
+
+export interface SteamAccount {
+	id: string;
+	name: string;
+	url: string;
+	avatarHash: string;
+}

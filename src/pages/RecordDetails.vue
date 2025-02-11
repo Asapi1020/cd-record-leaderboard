@@ -1,40 +1,66 @@
 <script setup lang="ts">
-import { CDAPIClient } from '@this/lib/apiClient';
-import { perkData, resolveWeaponData, resolveZedData } from '@this/lib/kfClassNameResolver';
-import type { Record } from '@this/lib/type';
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { CDAPIClient } from "@this/lib/apiClient";
+import {
+	perkData,
+	resolveWeaponData,
+	resolveZedData,
+} from "@this/lib/kfClassNameResolver";
+import type { Record, SteamAccount } from "@this/lib/type";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 const apiClient = new CDAPIClient();
 const route = useRoute();
 
 const record = ref<Record | null>(null);
+const playerData = ref<{ [key: string]: SteamAccount }>({});
 
 const getRecord = async () => {
 	record.value = null;
 	try {
 		const id = route.params.id;
-		if(typeof id !== 'string') {
-			throw new Error('Invalid record ID');
+		if (typeof id !== "string") {
+			throw new Error("Invalid record ID");
 		}
 
 		record.value = await apiClient.getRecord(id);
-	} catch(error) {
+	} catch (error) {
 		console.error(error);
 	}
-}
+};
+
+const getPlayerData = async (steamIDs: string[]) => {
+	try {
+		const fetchedPlayerData = await apiClient.getPlayerData(steamIDs);
+		for (const datum of fetchedPlayerData) {
+			Object.assign(playerData.value, { [datum.id]: datum });
+		}
+	} catch (error) {
+		console.error(error);
+	}
+};
 
 const resolveWeaponDataDisplay = (weaponDefClass: string) => {
-	const {name, image} = resolveWeaponData(weaponDefClass);
-	return image ? `<img src="${image}" alt="Weapon Icon" class="weapon-icon">${name}` : name;
-}
+	const { name, image } = resolveWeaponData(weaponDefClass);
+	return image
+		? `<img src="${image}" alt="Weapon Icon" class="weapon-icon">${name}`
+		: name;
+};
 
 const resolveZedDataDisplay = (zedClass: string) => {
-	const {name, image} = resolveZedData(zedClass);
-	return image ? `<img src="${image}" alt="Zed Icon" class="zed-icon">${name}` : name;
-}
+	const { name, image } = resolveZedData(zedClass);
+	return image
+		? `<img src="${image}" alt="Zed Icon" class="zed-icon">${name}`
+		: name;
+};
 
-onMounted(getRecord);
+onMounted(async () => {
+	await getRecord();
+	if (record.value) {
+		const steamIDs = record.value.userStats.map((stat) => stat.steamID);
+		await getPlayerData(steamIDs);
+	}
+});
 </script>
 <template>
 	<v-main style="min-height: 300px; margin-left: 20px; margin-top: 20px; margin-right: 20px">
@@ -206,8 +232,9 @@ onMounted(getRecord);
 				<v-col cols="4">
 					<v-card class="h-100">
 						<v-card-title>
-							<a :href="`https://steamcommunity.com/profiles/${stat.steamID}`" class="steam-link">
-								{{ stat.playerName ?? stat.steamID }}
+							<img v-if="playerData[stat.steamID] && playerData[stat.steamID].avatarHash" :src="`https://avatars.cloudflare.steamstatic.com/${playerData[stat.steamID].avatarHash}_full.jpg`" alt="steam avatar" class="avatar">
+							<a :href="playerData[stat.steamID]?.url ?? `https://steamcommunity.com/profiles/${stat.steamID}`" class="steam-link">
+								{{ playerData[stat.steamID]?.name ?? stat.playerName ?? stat.steamID }}
 							</a>
 						</v-card-title>
 						<v-card-text>
@@ -322,6 +349,7 @@ table td.number {
 </style>
 
 <style lang="scss">
+.avatar,
 .perk-icon,
 .zed-icon,
 .weapon-icon {
