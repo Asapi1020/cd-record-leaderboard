@@ -3,10 +3,12 @@ import { CDAPIClient } from "@this/lib/apiClient";
 import type { Record } from "@this/lib/type";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useDisplay } from "vuetify";
 
 const apiClient = new CDAPIClient();
 const route = useRoute();
 const router = useRouter();
+const mdAndUp = useDisplay().mdAndUp;
 
 const PER_PAGE = 20;
 const page = computed(() => (route.query.page ? Number(route.query.page) : 1));
@@ -44,7 +46,7 @@ watch(() => route.query.page, getRecords);
 </script>
 
 <template>
-	<v-main style="min-height: 300px; margin-left: 20px; margin-top: 20px; margin-right: 20px">
+	<v-main class="custom-main">
 		<div class="table-container mx-4">
 			<div v-if="isLoading" class="d-flex justify-center my-4">
                 <v-progress-circular
@@ -53,7 +55,37 @@ watch(() => route.query.page, getRecords);
                 ></v-progress-circular>
             </div>
 			<div v-else>
-				<table>
+				<v-container v-if="!mdAndUp">
+					<v-card v-for="record in records" :key="record.id" class="mb-4">
+						<v-card-title>
+							{{ record.matchInfo.isVictory ? "Victory" : `Defeat @${record.matchInfo.defeatWave}` }}
+						</v-card-title>
+						<v-card-text>
+							<div class="mb-2">
+								<span>{{ record.matchInfo.isSolo ? "Solo" : record.matchInfo.serverName ?? record.matchInfo.serverIP }}</span>
+							</div>
+							<h3 class="mb-2">{{ record.matchInfo.mapName }}</h3>
+							<div class="mb-2">
+								<span>SpawnCycle={{ record.matchInfo.CDInfo.spawnCycle }}</span><br>
+								<span>MaxMonsters={{ record.matchInfo.CDInfo.maxMonsters }}</span><br>
+								<span>CohortSize={{ record.matchInfo.CDInfo.cohortSize }}</span><br>
+								<span>SpawnPoll={{ record.matchInfo.CDInfo.spawnPoll }}</span><br>
+								<span>WaveSizeFakes={{ record.matchInfo.CDInfo.waveSizeFakes }}</span><br>
+							</div>
+							<div class="mb-2">
+								<span>Players</span><br>
+								<span v-for="(stat, index) in record.userStats" :key="index">
+									{{ stat.playerName ?? stat.steamID }}
+									<span v-if="index < record.userStats.length - 1">, </span>
+								</span>
+							</div>
+							<button @click="openRecordDetails(record.id)" class="btn">
+								Details
+							</button>
+						</v-card-text>
+					</v-card>
+				</v-container>
+				<table v-else>
 					<thead>
 						<tr>
 							<th></th>
@@ -78,7 +110,7 @@ watch(() => route.query.page, getRecords);
 							</td>
 							<td>{{ new Date(record.matchInfo.timeStamp).toLocaleDateString() }}</td>
 							<td>{{ record.matchInfo.isSolo ? "Solo" : record.matchInfo.serverName ?? record.matchInfo.serverIP }}</td>
-							<td>{{ record.matchInfo.isVictory ? "Win" : `Defeat @${record.matchInfo.defeatWave}` }}</td>
+							<td>{{ record.matchInfo.isVictory ? "Victory" : `Defeat @${record.matchInfo.defeatWave}` }}</td>
 							<td>{{ record.matchInfo.mapName }}</td>
 							<td>{{ record.matchInfo.CDInfo.spawnCycle }}</td>
 							<td>{{ record.matchInfo.CDInfo.maxMonsters }}</td>
@@ -94,7 +126,7 @@ watch(() => route.query.page, getRecords);
 						</tr>
 					</tbody>
 				</table>
-				<v-pagination v-model="page" :length="Math.ceil(totalRecordsNum / PER_PAGE)" class="text-center mt-4" :totalVisible="9" @update:modelValue="onPageChange"></v-pagination>
+				<v-pagination v-model="page" :length="Math.ceil(totalRecordsNum / PER_PAGE)" class="text-center mt-4" :totalVisible="mdAndUp ? 9 : 3" @update:modelValue="onPageChange"></v-pagination>
 			</div>
 		</div>		
 	</v-main>
@@ -128,5 +160,16 @@ table td {
 }
 .btn:hover {
   background-color: #A52A2A;
+}
+
+.custom-main {
+  min-height: 300px;
+  margin: 20px;
+}
+
+@media (max-width: 600px) {
+  .custom-main {
+	margin: 0;
+  }
 }
 </style>

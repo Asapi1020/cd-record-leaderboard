@@ -63,7 +63,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-	<v-main style="min-height: 300px; margin-left: 20px; margin-top: 20px; margin-right: 20px">
+	<v-main class="custom-main">
 		<v-container v-if="record">
             <v-row>
 				<v-col cols="12">
@@ -71,7 +71,7 @@ onMounted(async () => {
 						<v-card-title>Match Result</v-card-title>
 					</v-card>
 				</v-col>
-                <v-col cols="8">
+                <v-col cols="12" md="8">
                     <v-card class="h-100">
                         <v-card-text>
 							<div>{{ new Date(record.matchInfo.timeStamp).toLocaleString() }}</div>
@@ -81,12 +81,12 @@ onMounted(async () => {
 						</v-card-text>
                     </v-card>
                 </v-col>
-                <v-col cols="4">
+                <v-col cols="12" md="4">
                     <v-card class="h-100 d-flex align-center justify-center">
 						<v-card-title>{{ record.matchInfo.isVictory ? "Victory" : `Defeat at Wave ${record.matchInfo.defeatWave}` }}</v-card-title>
 					</v-card>
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                     <v-card class="mb-4">
 						<v-card-title>Settings</v-card-title>
                         <v-card-text>
@@ -138,7 +138,7 @@ onMounted(async () => {
 						</v-card-text>
 					</v-card>
                 </v-col>
-				<v-col cols="6">
+				<v-col cols="12" md="6">
 					<v-card class="mb-4">
 						<v-card-text>
 							<table>
@@ -229,7 +229,7 @@ onMounted(async () => {
 				</v-col>
             </v-row>
 			<v-row v-for="(stat, index) in record.userStats" :key="index">
-				<v-col cols="4">
+				<v-col cols="12" md="4">
 					<v-card class="h-100">
 						<v-card-title>
 							<img v-if="playerData[stat.steamID] && playerData[stat.steamID].avatarHash" :src="`https://avatars.cloudflare.steamstatic.com/${playerData[stat.steamID].avatarHash}_full.jpg`" alt="steam avatar" class="avatar">
@@ -276,7 +276,7 @@ onMounted(async () => {
 						</v-card-text>
 					</v-card>
 				</v-col>
-				<v-col cols="8">
+				<v-col cols="12" md="8">
 					<v-card class="mb-4">
 						<v-card-title>Weapon Damages</v-card-title>
 						<v-card-text>
@@ -357,5 +357,16 @@ table td.number {
 	width: auto;
 	vertical-align: middle;
 	margin-right: 6px;
+}
+
+.custom-main {
+  min-height: 300px;
+  margin: 20px;
+}
+
+@media (max-width: 600px) {
+  .custom-main {
+	margin: 0;
+  }
 }
 </style>
