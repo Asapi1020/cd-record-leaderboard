@@ -21,8 +21,13 @@ export class CDAPIClient {
 		return data.data;
 	}
 
-	public async getRecords(page: number): Promise<[Record[], number]> {
-		const response = await this.get(`/records?page=${page}`);
+	public async getRecords(
+		page: number,
+		isVictory: boolean,
+	): Promise<[Record[], number]> {
+		const response = await this.get(
+			`/records?page=${page}${isVictory ? "&isVictory=1" : ""}`,
+		);
 		if (!response.ok) {
 			console.error(response);
 			throw new Error("HTTP Error");
