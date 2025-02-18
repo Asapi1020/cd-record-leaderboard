@@ -1,14 +1,15 @@
 <script>
-import Header from './components/Header.vue';
-import * as labs from 'vuetify/labs/components';
+import * as labs from "vuetify/labs/components";
+import Header from "./components/Header.vue";
+import "./assets/global.scss";
 
 export default {
-name: 'App',
-components: {
-	...labs,
-    Header
-  }
-}
+	name: "App",
+	components: {
+		...labs,
+		Header,
+	},
+};
 </script>
 
 <template>

@@ -1,0 +1,17 @@
+.custom-main {
+	min-height: 300px;
+	margin: 20px !important;;
+}
+
+@media (max-width: 600px) {
+	.custom-main {
+		margin: 0 !important;;
+	}
+}
+
+.inline-image {
+	height: 1.5em;
+	width: auto;
+	vertical-align: middle;
+	margin-right: 6px;
+}

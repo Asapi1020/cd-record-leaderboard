@@ -43,14 +43,14 @@ const getPlayerData = async (steamIDs: string[]) => {
 const resolveWeaponDataDisplay = (weaponDefClass: string) => {
 	const { name, image } = resolveWeaponData(weaponDefClass);
 	return image
-		? `<img src="${image}" alt="Weapon Icon" class="weapon-icon">${name}`
+		? `<img src="${image}" alt="Weapon Icon" class="inline-image">${name}`
 		: name;
 };
 
 const resolveZedDataDisplay = (zedClass: string) => {
 	const { name, image } = resolveZedData(zedClass);
 	return image
-		? `<img src="${image}" alt="Zed Icon" class="zed-icon">${name}`
+		? `<img src="${image}" alt="Zed Icon" class="inline-image">${name}`
 		: name;
 };
 
@@ -232,7 +232,7 @@ onMounted(async () => {
 				<v-col cols="12" md="4">
 					<v-card class="h-100">
 						<v-card-title>
-							<img v-if="playerData[stat.steamID] && playerData[stat.steamID].avatarHash" :src="`https://avatars.cloudflare.steamstatic.com/${playerData[stat.steamID].avatarHash}_full.jpg`" alt="steam avatar" class="avatar">
+							<img v-if="playerData[stat.steamID] && playerData[stat.steamID].avatarHash" :src="`https://avatars.cloudflare.steamstatic.com/${playerData[stat.steamID].avatarHash}_full.jpg`" alt="steam avatar" class="inline-image">
 							<a :href="playerData[stat.steamID]?.url ?? `https://steamcommunity.com/profiles/${stat.steamID}`" class="steam-link">
 								{{ playerData[stat.steamID]?.name ?? stat.playerName ?? stat.steamID }}
 							</a>
@@ -243,7 +243,7 @@ onMounted(async () => {
 									<tr>
 										<td>Perk</td>
 										<td>
-											<img :src="perkData[stat.perkClass.toLowerCase()][1]" alt="Perk Icon" class="perk-icon">
+											<img :src="perkData[stat.perkClass.toLowerCase()][1]" alt="Perk Icon" class="inline-image">
 											{{ perkData[stat.perkClass.toLowerCase()][0] }}
 										</td>
 									</tr>
@@ -349,24 +349,4 @@ table td.number {
 </style>
 
 <style lang="scss">
-.avatar,
-.perk-icon,
-.zed-icon,
-.weapon-icon {
-	height: 1.5em;
-	width: auto;
-	vertical-align: middle;
-	margin-right: 6px;
-}
-
-.custom-main {
-  min-height: 300px;
-  margin: 20px;
-}
-
-@media (max-width: 600px) {
-  .custom-main {
-	margin: 0;
-  }
-}
 </style>

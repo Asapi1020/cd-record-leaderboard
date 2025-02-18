@@ -80,15 +80,4 @@ watch([() => route.query.page, isVictory], getRecords);
 .table-container {
   overflow-x: auto;
 }
-
-.custom-main {
-  min-height: 300px;
-  margin: 20px;
-}
-
-@media (max-width: 600px) {
-  .custom-main {
-	margin: 0;
-  }
-}
 </style>

@@ -24,9 +24,14 @@ export class CDAPIClient {
 	public async getRecords(
 		page: number,
 		isVictory: boolean,
+		steamID?: string,
+		isAll = false,
 	): Promise<[Record[], number]> {
 		const response = await this.get(
-			`/records?page=${page}${isVictory ? "&isVictory=1" : ""}`,
+			`/records?page=${page}` +
+				`${isVictory ? "&isVictory=1" : ""}` +
+				`${steamID ? `&steamID=${steamID}` : ""}` +
+				`${isAll ? "&isAll=1" : ""}`,
 		);
 		if (!response.ok) {
 			console.error(response);
