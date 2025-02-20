@@ -232,8 +232,10 @@ onMounted(async () => {
 				<v-col cols="12" md="4">
 					<v-card class="h-100">
 						<v-card-title>
-							<img v-if="playerData[stat.steamID] && playerData[stat.steamID].avatarHash" :src="`https://avatars.cloudflare.steamstatic.com/${playerData[stat.steamID].avatarHash}_full.jpg`" alt="steam avatar" class="inline-image">
-							<a :href="playerData[stat.steamID]?.url ?? `https://steamcommunity.com/profiles/${stat.steamID}`" class="steam-link">
+							<a :href="`/players/${stat.steamID}`">
+								<img v-if="playerData[stat.steamID] && playerData[stat.steamID].avatarHash" :src="`https://avatars.cloudflare.steamstatic.com/${playerData[stat.steamID].avatarHash}_full.jpg`" alt="steam avatar" class="inline-image link-image">
+							</a>							
+							<a :href="`/players/${stat.steamID}`" class="less-decorated-link">
 								{{ playerData[stat.steamID]?.name ?? stat.playerName ?? stat.steamID }}
 							</a>
 						</v-card-title>

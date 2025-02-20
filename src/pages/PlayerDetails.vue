@@ -99,9 +99,16 @@ onMounted(async () => {
 			<v-row v-if="playerData">
 				<v-col cols="12">
 					<v-card class="dark-red-background">
-						<v-card-title>
+						<v-card-title class="flex">
 							<img :src="`https://avatars.cloudflare.steamstatic.com/${playerData.avatarHash}_full.jpg`" alt="steam avatar" class="inline-image">
 							{{ playerData.name }}
+							<a :href="playerData.url" target="_blank" rel="noopener noreferrer" class="steam-link">
+								<img 
+									src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/512px-Steam_icon_logo.svg.png" 
+									alt="steam logo" 
+									class="inline-image link-image"
+								/>
+							</a>
 						</v-card-title>
 					</v-card>
 				</v-col>
@@ -251,7 +258,6 @@ onMounted(async () => {
 				hide-details="auto"
 			/>
 			<RecordTable :records="isVictory ? records.filter(record => record.matchInfo.isVictory) : records" />
-			{{ isVictory }}
 		</div>
 		<v-container v-else-if="playerData">
 			<v-progress-circular indeterminate color="primary" class="mx-auto my-4 mr-4"></v-progress-circular>
@@ -277,5 +283,14 @@ table td.number {
 
 .centered {
   text-align: center;
+}
+
+.flex {
+	display: flex;
+	align-items: center;
+}
+
+.steam-link {
+	margin-left: auto;
 }
 </style>

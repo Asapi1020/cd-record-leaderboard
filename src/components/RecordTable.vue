@@ -50,7 +50,9 @@ const openRecordDetails = (recordID: string) => {
 				<td>{{ record.matchInfo.CDInfo.waveSizeFakes }}</td>
 				<td>
 					<span v-for="(stat, index) in record.userStats" :key="index">
-						{{ stat.playerName ?? stat.steamID }}
+						<a :href="`/players/${stat.steamID}`" class="player-link">
+							{{ stat.playerName ?? stat.steamID }}
+						</a>
 						<span v-if="index < record.userStats.length - 1">, </span>
 					</span>
 				</td>
@@ -83,5 +85,14 @@ table td {
 }
 .btn:hover {
   background-color: #A52A2A;
+}
+
+.player-link {
+	color: whitesmoke;
+	text-decoration: none;
+}
+
+.player-link:hover {
+	text-decoration: underline;
 }
 </style>

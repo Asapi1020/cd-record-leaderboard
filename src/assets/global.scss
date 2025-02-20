@@ -15,3 +15,20 @@
 	vertical-align: middle;
 	margin-right: 6px;
 }
+
+.link-image {
+	transition: transform 0.2s ease-in-out;
+}
+
+.link-image:hover {
+	transform: scale(1.2);
+}
+
+.less-decorated-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.less-decorated-link:hover {
+	text-decoration: underline;
+}
