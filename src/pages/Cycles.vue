@@ -1,21 +1,9 @@
 <script setup lang="ts">
+import { Difficulty, GameLength } from "@this/lib/cycleAnalyzer";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-
-enum GameLength {
-	Short = 0,
-	Medium = 1,
-	Long = 2,
-}
-
-enum Difficulty {
-	Normal = 0,
-	Hard = 1,
-	Suicidal = 2,
-	HellOnEarth = 3,
-}
 
 const cycleName = ref<string>("");
 const gameLength = ref<number>(GameLength.Long);
