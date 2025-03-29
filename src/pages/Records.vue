@@ -24,14 +24,10 @@ const onPageChange = (newPage: number) => {
 	router.push({ query: { ...route.query, page: newPage } });
 };
 
-// const navigateTo = (path: string) => {
-// 	router.push(path);
-// };
-
 const getRecords = async () => {
 	isLoading.value = true;
 	try {
-		const fetchedRecords = await apiClient.getRecords(
+		const fetchedRecords = await apiClient.getRecordsV2(
 			page.value,
 			isVictory.value,
 		);

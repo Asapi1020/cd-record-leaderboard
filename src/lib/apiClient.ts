@@ -1,3 +1,4 @@
+import { toRecordData } from "./interface-adapters/record/Presenter";
 import type { Record, SteamAccount } from "./type";
 
 export class CDAPIClient {
@@ -39,6 +40,22 @@ export class CDAPIClient {
 		}
 		const data = await response.json();
 		return [data.data, data.total];
+	}
+
+	public async getRecordsV2(
+		page: number,
+		isVictory: boolean,
+	): Promise<[Record[], number]> {
+		const response = await this.get(
+			`/v2/records?page=${page}` + `${isVictory ? "&isVictory=true" : ""}`,
+		);
+		if (!response.ok) {
+			console.error(response);
+			throw new Error("HTTP Error");
+		}
+		const data = await response.json();
+		const [records, total] = toRecordData(data);
+		return [records, total];
 	}
 
 	public async getPlayerData(steamIDs: string[]): Promise<SteamAccount[]> {

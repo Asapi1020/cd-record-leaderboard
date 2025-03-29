@@ -11,16 +11,66 @@ export enum Difficulty {
 	HellOnEarth = 3,
 }
 
+interface GroupInfo {
+	groupSize: number;
+	zedName: string;
+	isSpawnRage: boolean;
+}
+
+interface CycleInfo {
+	[zedName: string]: {
+		count: number;
+		spawnRageCount: number;
+	};
+}
+
 export const analyzeCycle = (
 	cycleDefs: string[],
 	gameLength: GameLength,
 	difficulty: Difficulty,
 	waveSizeFakes: number,
-): string => {
-	return ""; // TODO: analyze whole cycle
+): CycleInfo => {
+	const extractedCycleDefs = extractCycleDefsByGameLength(
+		cycleDefs,
+		gameLength,
+	);
+	if (extractedCycleDefs.length === 0) {
+		return {};
+	}
+
+	const cycleInfos: CycleInfo[] = [];
+	for (let waveNum = 0; waveNum < extractedCycleDefs.length; waveNum++) {
+		const waveSize = calcWaveSize(
+			waveNum,
+			gameLength,
+			difficulty,
+			waveSizeFakes,
+		);
+		const cycleInfo = analyzeWave(extractedCycleDefs[waveNum], waveSize);
+		cycleInfos.push(cycleInfo);
+	}
+	return mergeCycleInfo(cycleInfos);
 };
 
-export const extractCycleDefsByGameLength = (
+const mergeCycleInfo = (cycleInfos: CycleInfo[]): CycleInfo => {
+	const merged: CycleInfo = {};
+
+	for (const cycleInfo of cycleInfos) {
+		for (const [zedName, { count, spawnRageCount }] of Object.entries(
+			cycleInfo,
+		)) {
+			if (!merged[zedName]) {
+				merged[zedName] = { count: 0, spawnRageCount: 0 };
+			}
+			merged[zedName].count += count;
+			merged[zedName].spawnRageCount += spawnRageCount;
+		}
+	}
+
+	return merged;
+};
+
+const extractCycleDefsByGameLength = (
 	cycleDefs: string[],
 	gameLength: GameLength,
 ): string[] => {
@@ -134,10 +184,10 @@ const calcWaveSize = (
 	return Math.floor(multiplier * baseNum * difficultyMod);
 };
 
-const analyzeWave = (waveDef: string, waveSize: number): GroupInfo[] => {
+const analyzeWave = (waveDef: string, waveSize: number): CycleInfo => {
 	let spawnCount = 0;
 	const squads = waveDef.split(",");
-	const groupsInfo: GroupInfo[] = [];
+	const cycleInfo: CycleInfo = {};
 
 	do {
 		for (const squad of squads) {
@@ -145,7 +195,7 @@ const analyzeWave = (waveDef: string, waveSize: number): GroupInfo[] => {
 			for (const group of groups) {
 				const groupInfo = parseGroupInfo(group);
 				if (!groupInfo) {
-					return [];
+					return {};
 				}
 
 				// If the group size is too large, reduce it to fit the wave size
@@ -154,22 +204,22 @@ const analyzeWave = (waveDef: string, waveSize: number): GroupInfo[] => {
 				}
 
 				spawnCount += groupInfo.groupSize;
-				groupsInfo.push(groupInfo);
+				cycleInfo[groupInfo.zedName] = {
+					count:
+						(cycleInfo[groupInfo.zedName]?.count || 0) + groupInfo.groupSize,
+					spawnRageCount:
+						(cycleInfo[groupInfo.zedName]?.spawnRageCount || 0) +
+						(groupInfo.isSpawnRage ? groupInfo.groupSize : 0),
+				};
 
 				if (spawnCount >= waveSize) {
-					return groupsInfo;
+					return cycleInfo;
 				}
 			}
 		}
 	} while (spawnCount < waveSize);
-	return groupsInfo;
+	return cycleInfo;
 };
-
-interface GroupInfo {
-	groupSize: number;
-	zedName: string;
-	isSpawnRage: boolean;
-}
 
 const parseGroupInfo = (group: string): GroupInfo | undefined => {
 	const parsedGroupDef = group.match(/(^\d+)|([A-Za-z]+)|([*!]$)/g);
