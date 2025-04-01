@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { toString as convertToString } from "@asp1020/type-utils";
+import UsageBar from "@this/components/UsageBar.vue";
 import { CDAPIClient } from "@this/lib/apiClient";
 import { throwInvalidParameterError } from "@this/lib/domain/ErrorHandler";
 import { PERK_LIST, perkColors, perkData } from "@this/lib/domain/kf";
@@ -38,7 +39,6 @@ const getPlayerData = async () => {
 };
 
 const stats = ref<UserStats[]>([]);
-const statsForEachPerk = ref<{ [perk: string]: UserStats[] }>({});
 const isGetPlayerStatsError = ref<boolean>(false);
 
 const getPlayerStats = async () => {
@@ -56,6 +56,20 @@ const getPlayerStats = async () => {
 		console.error(error);
 		isGetPlayerStatsError.value = true;
 	}
+};
+
+const statsForEachPerk = ref<{ [perk: string]: UserStats[] }>({});
+const setupStats = () => {
+	statsForEachPerk.value = stats.value.reduce<{ [perk: string]: UserStats[] }>(
+		(acc, stat) => {
+			if (!acc[stat.perkClass]) {
+				acc[stat.perkClass] = [];
+			}
+			acc[stat.perkClass].push(stat);
+			return acc;
+		},
+		{},
+	);
 };
 
 const records = ref<Record[]>([]);
@@ -80,25 +94,23 @@ const getPlayerRecords = async () => {
 	}
 };
 
-const setupStats = () => {
-	statsForEachPerk.value = stats.value.reduce<{ [perk: string]: UserStats[] }>(
-		(acc, stat) => {
-			if (!acc[stat.perkClass]) {
-				acc[stat.perkClass] = [];
-			}
-			acc[stat.perkClass].push(stat);
-			return acc;
-		},
-		{},
-	);
-};
-
 const orderedPerks = computed(() => {
 	return PERK_LIST.map((perk) =>
 		Object.keys(statsForEachPerk.value).find(
 			(key) => key.toLowerCase() === perk.toLowerCase(),
 		),
 	).filter((perk) => perk !== undefined);
+});
+
+const perkUsages = computed(() => {
+	return usedCountOrderedPerks.value.map((perk) => {
+		const perkName = perk?.toLowerCase() ?? "";
+		return {
+			name: perkData[perkName][0],
+			count: statsForEachPerk.value[perk]?.length ?? 0,
+			color: perkColors(perkName),
+		};
+	});
 });
 
 const usedCountOrderedPerks = computed(() => {
@@ -109,20 +121,6 @@ const usedCountOrderedPerks = computed(() => {
 			return bCount - aCount;
 		})
 		.slice(0, 6);
-});
-
-const usagePercentage = (perk: string) => {
-	const totalCount = stats.value.length;
-	const usedCount = statsForEachPerk.value[perk].length;
-	return totalCount > 0 ? (usedCount * 100) / totalCount : 0;
-};
-
-const otherPercentage = computed(() => {
-	const totalCount = stats.value.length;
-	const usedCount = usedCountOrderedPerks.value.reduce((acc, perk) => {
-		return acc + statsForEachPerk.value[perk].length;
-	}, 0);
-	return totalCount > 0 ? ((totalCount - usedCount) * 100) / totalCount : 0;
 });
 
 const onPageChange = (newPage: number) => {
@@ -291,28 +289,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 									</tr>
 								</tbody>
 							</table>
-							<div class="perk-usage">
-								<span class="title mb-4">Most Used Perks</span>
-								<div class="bar-container">
-									<div
-										v-for="perk in usedCountOrderedPerks"
-										:key="perk"
-										class="bar-segment"
-										:style="{ width: `${usagePercentage(perk)}%`, backgroundColor: perkColors(perk) }"
-									></div>
-									<div
-										v-if="otherPercentage > 0"
-										class="bar-segment other"
-										:style="{ width: `${otherPercentage}%` }"
-									></div>
-								</div>
-								<div class="legend">
-									<div v-for="perk in usedCountOrderedPerks" :key="perk" class="legend-item">
-										<span class="legend-color" :style="{ backgroundColor: perkColors(perk) }"></span>
-										<span>{{ perkData[perk.toLowerCase()][0] }} ({{ usagePercentage(perk).toFixed(2) }}%)</span>
-									</div>
-								</div>	
-							</div>	
+							<UsageBar title="Most Used Perks" :usages="perkUsages" :total="stats.length" />
 						</v-card-text>
 						<v-alert v-else-if="isGetPlayerStatsError" type="error" outlined>
 							Failed to fetch player stats. Please try again later.
@@ -373,53 +350,5 @@ table td.number {
 
 .steam-link {
 	margin-left: auto;
-}
-
-.perk-usage {
-  max-width: 500px;
-  font-family: Arial, sans-serif;
-}
-
-.title {
-  font-size: 18px;
-  color: #187700
-}
-
-.bar-container {
-  display: flex;
-  height: 10px;
-  background: #222;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.bar-segment {
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.bar-segment.other {
-  background: #999;
-}
-
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  color: #999
-}
-
-.legend-color {
-  width: 10px;
-  height: 10px;
-  border-radius: 8px;
-  margin-right: 5px;
-  display: inline-block;
 }
 </style>
