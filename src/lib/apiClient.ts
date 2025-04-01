@@ -1,5 +1,9 @@
-import { toRecordData } from "./interface-adapters/record/Presenter";
-import type { Record, SteamAccount } from "./type";
+import {
+	toRecord,
+	toRecordData,
+	toUserStatsArray,
+} from "./interface-adapters/record";
+import type { Record, SteamAccount, UserStats } from "./type";
 
 export class CDAPIClient {
 	private apiURL: string;
@@ -13,13 +17,13 @@ export class CDAPIClient {
 	}
 
 	public async getRecord(id: string): Promise<Record> {
-		const response = await this.get(`/records/${id}`);
+		const response = await this.get(`/v2/records/${id}`);
 		if (!response.ok) {
 			console.error(response);
 			throw new Error("HTTP Error");
 		}
 		const data = await response.json();
-		return data.data;
+		return toRecord(data);
 	}
 
 	public async getRecords(
@@ -58,6 +62,25 @@ export class CDAPIClient {
 		return [records, total];
 	}
 
+	public async getPlayersRecords(
+		steamID: string,
+		page: number,
+		isVictory: boolean,
+	): Promise<[Record[], number]> {
+		console.log(steamID, page, isVictory);
+		const response = await this.get(
+			`/v2/users/${steamID}/records?page=${page}` +
+				`${isVictory ? "&isVictory=true" : ""}`,
+		);
+		if (!response.ok) {
+			console.error(response);
+			throw new Error("HTTP Error");
+		}
+		const data = await response.json();
+		const [records, total] = toRecordData(data);
+		return [records, total];
+	}
+
 	public async getPlayerData(steamIDs: string[]): Promise<SteamAccount[]> {
 		const response = await this.get(`/players?id=${steamIDs.join(",")}`);
 		if (!response.ok) {
@@ -66,6 +89,16 @@ export class CDAPIClient {
 		}
 		const data = await response.json();
 		return data;
+	}
+
+	public async getPlayerStats(steamID: string): Promise<UserStats[]> {
+		const response = await this.get(`/v2/users/${steamID}/stats`);
+		if (!response.ok) {
+			console.error(response);
+			throw new Error("HTTP Error");
+		}
+		const data = await response.json();
+		return toUserStatsArray(data);
 	}
 
 	private async get(path: string) {

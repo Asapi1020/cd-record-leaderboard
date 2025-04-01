@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { toString as convertToString } from "@asp1020/type-utils";
 import { CDAPIClient } from "@this/lib/apiClient";
+import { throwInvalidParameterError } from "@this/lib/domain/ErrorHandler";
 import { perkData } from "@this/lib/kfClassNameResolver";
 import type { Record, SteamAccount, UserStats } from "@this/lib/type";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 import RecordTable from "../components/RecordTable.vue";
 
 const apiClient = new CDAPIClient();
@@ -16,14 +19,13 @@ const isVictory = ref<boolean>(false);
 const totalRecordsNum = ref<number>(0);
 const stats = ref<UserStats[]>([]);
 const statsForEachPerk = ref<{ [perk: string]: UserStats[] }>({});
+const mdAndUp = useDisplay().mdAndUp;
+const PER_PAGE = 20;
 
 const getPlayerData = async () => {
 	try {
-		const steamID = route.params.id;
-		if (typeof steamID !== "string") {
-			throw new Error("Invalid record ID");
-		}
-
+		const steamID =
+			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
 		const fetchedPlayerData = await apiClient.getPlayerData([steamID]);
 		if (fetchedPlayerData.length === 0 || fetchedPlayerData[0].id !== steamID) {
 			throw new Error("Player not found");
@@ -35,13 +37,30 @@ const getPlayerData = async () => {
 	}
 };
 
-const getPlayerRecords = async (steamID: string) => {
+const getPlayerStats = async () => {
 	try {
-		const fetchedRecords = await apiClient.getRecords(
-			page.value,
-			false,
+		const steamID =
+			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
+		const fetchedPlayerStats = await apiClient.getPlayerStats(steamID);
+		if (fetchedPlayerStats.length === 0) {
+			throw new Error("Player stats not found");
+		}
+		stats.value = fetchedPlayerStats;
+		setupStats();
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+const getPlayerRecords = async () => {
+	try {
+		records.value = [];
+		const steamID =
+			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
+		const fetchedRecords = await apiClient.getPlayersRecords(
 			steamID,
-			true,
+			page.value,
+			isVictory.value,
 		);
 		[records.value, totalRecordsNum.value] = fetchedRecords;
 	} catch (error) {
@@ -49,23 +68,8 @@ const getPlayerRecords = async (steamID: string) => {
 	}
 };
 
-const setupStats = (records: Record[]) => {
-	const steamID = route.params.id;
-	if (typeof steamID !== "string") {
-		throw new Error("Invalid record ID");
-	}
-	const userStats = records.map((record) => {
-		const stat = record.userStats.find(
-			(userStat) => userStat.steamID === steamID,
-		);
-		if (!stat) {
-			throw new Error("User stats not found");
-		}
-		return stat;
-	});
-	stats.value = userStats;
-
-	statsForEachPerk.value = userStats.reduce<{ [perk: string]: UserStats[] }>(
+const setupStats = () => {
+	statsForEachPerk.value = stats.value.reduce<{ [perk: string]: UserStats[] }>(
 		(acc, stat) => {
 			if (!acc[stat.perkClass]) {
 				acc[stat.perkClass] = [];
@@ -77,29 +81,27 @@ const setupStats = (records: Record[]) => {
 	);
 };
 
-onMounted(async () => {
-	await getPlayerData();
-	if (!playerData.value) {
-		console.error("Failed to get player data");
-		return;
-	}
-	await getPlayerRecords(playerData.value.id);
+const onPageChange = (newPage: number) => {
+	page.value = newPage;
+	getPlayerRecords();
+};
 
-	if (records.value.length === 0) {
-		console.error("Failed to get records");
-		return;
-	}
-	setupStats(records.value);
+onMounted(() => {
+	getPlayerData();
+	getPlayerStats();
+	getPlayerRecords();
 });
+
+watch(() => [isVictory.value], getPlayerRecords);
 </script>
 
 <template>
 	<v-main class="custom-main">
 		<v-container>
-			<v-row v-if="playerData">
+			<v-row>
 				<v-col cols="12">
 					<v-card class="dark-red-background">
-						<v-card-title class="flex">
+						<v-card-title class="flex" v-if="playerData">
 							<img :src="`https://avatars.cloudflare.steamstatic.com/${playerData.avatarHash}_full.jpg`" alt="steam avatar" class="inline-image">
 							{{ playerData.name }}
 							<a :href="playerData.url" target="_blank" rel="noopener noreferrer" class="steam-link">
@@ -110,14 +112,18 @@ onMounted(async () => {
 								/>
 							</a>
 						</v-card-title>
+						<div v-else>
+							<v-progress-circular indeterminate color="primary" class="mx-auto my-2 ml-4 mr-4"></v-progress-circular>
+							Loading player data...
+						</div>
 					</v-card>
 				</v-col>
-				<v-col v-if="records.length>0" cols="12">
+				<v-col cols="12">
 					<v-card>
 						<v-card-title>
 							Player Stats
 						</v-card-title>
-						<v-card-text>
+						<v-card-text v-if="stats.length>0">
 							<table>
 								<thead>
 									<tr>
@@ -239,30 +245,30 @@ onMounted(async () => {
 								</tbody>
 							</table>
 						</v-card-text>
+						<div v-else>
+							<v-progress-circular indeterminate color="primary" class="mx-auto my-2 ml-4 mr-4"></v-progress-circular>
+							Loading player stats...
+						</div>
 					</v-card>
 				</v-col>
 			</v-row>
-			<div v-else>
-				<v-progress-circular indeterminate color="primary" class="mx-auto my-4 mr-4"></v-progress-circular>
-				Loading player data...
-			</div>
 		</v-container>
-		<div v-if="records.length>0">
-			<v-card class="dark-red-background">
-				<v-card-title>Records</v-card-title>
-			</v-card>
-			<v-checkbox 
-				v-model="isVictory" 
-				label="Show Victory Only" 
-				density="compact"
-				hide-details="auto"
-			/>
-			<RecordTable :records="isVictory ? records.filter(record => record.matchInfo.isVictory) : records" />
-		</div>
-		<v-container v-else-if="playerData">
+
+		<v-card class="dark-red-background">
+			<v-card-title>Records</v-card-title>
+		</v-card>
+		<v-checkbox 
+			v-model="isVictory" 
+			label="Show Victory Only" 
+			density="compact"
+			hide-details="auto"
+		/>
+		<RecordTable :records="records" v-if="records.length>0" />
+		<div v-else>
 			<v-progress-circular indeterminate color="primary" class="mx-auto my-4 mr-4"></v-progress-circular>
 			Loading records...
-		</v-container>
+		</div>
+		<v-pagination v-model="page" :length="Math.ceil(totalRecordsNum / PER_PAGE)" class="text-center mt-4" :totalVisible="mdAndUp ? 9 : 3" @update:modelValue="onPageChange"></v-pagination>
 	</v-main>
 </template>
 

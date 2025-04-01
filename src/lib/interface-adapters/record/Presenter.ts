@@ -219,6 +219,16 @@ export const toUserStats = (data: unknown): UserStats => {
 	};
 };
 
+export const toUserStatsArray = (data: unknown): UserStats[] => {
+	if (!isObject(data) || !isArray(data.stats)) {
+		return throwInternalServerError(
+			"Data is not an object or stats is not an array",
+		);
+	}
+
+	return data.stats.map(toUserStats);
+};
+
 export const toWeaponDamage = (data: unknown): WeaponDamage => {
 	if (!isObject(data)) {
 		return throwInternalServerError("WeaponDamage is not an object");
