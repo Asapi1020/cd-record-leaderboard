@@ -12,18 +12,17 @@ import RecordTable from "../components/RecordTable.vue";
 const apiClient = new CDAPIClient();
 const route = useRoute();
 
-const playerData = ref<SteamAccount | null>(null);
-const records = ref<Record[]>([]);
 const page = ref<number>(1);
 const isVictory = ref<boolean>(false);
-const totalRecordsNum = ref<number>(0);
-const stats = ref<UserStats[]>([]);
-const statsForEachPerk = ref<{ [perk: string]: UserStats[] }>({});
 const mdAndUp = useDisplay().mdAndUp;
 const PER_PAGE = 20;
 
+const playerData = ref<SteamAccount | null>(null);
+const isGetPlayerDataError = ref<boolean>(false);
+
 const getPlayerData = async () => {
 	try {
+		isGetPlayerDataError.value = false;
 		const steamID =
 			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
 		const fetchedPlayerData = await apiClient.getPlayerData([steamID]);
@@ -33,12 +32,18 @@ const getPlayerData = async () => {
 
 		playerData.value = fetchedPlayerData[0];
 	} catch (error) {
+		isGetPlayerDataError.value = true;
 		console.error(error);
 	}
 };
 
+const stats = ref<UserStats[]>([]);
+const statsForEachPerk = ref<{ [perk: string]: UserStats[] }>({});
+const isGetPlayerStatsError = ref<boolean>(false);
+
 const getPlayerStats = async () => {
 	try {
+		isGetPlayerStatsError.value = false;
 		const steamID =
 			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
 		const fetchedPlayerStats = await apiClient.getPlayerStats(steamID);
@@ -49,11 +54,17 @@ const getPlayerStats = async () => {
 		setupStats();
 	} catch (error) {
 		console.error(error);
+		isGetPlayerStatsError.value = true;
 	}
 };
 
+const records = ref<Record[]>([]);
+const totalRecordsNum = ref<number>(0);
+const isGetPlayerRecordsError = ref<boolean>(false);
+
 const getPlayerRecords = async () => {
 	try {
+		isGetPlayerRecordsError.value = false;
 		records.value = [];
 		const steamID =
 			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
@@ -65,6 +76,7 @@ const getPlayerRecords = async () => {
 		[records.value, totalRecordsNum.value] = fetchedRecords;
 	} catch (error) {
 		console.error(error);
+		isGetPlayerRecordsError.value = true;
 	}
 };
 
@@ -144,6 +156,9 @@ watch(() => [isVictory.value], getPlayerRecords);
 								/>
 							</a>
 						</v-card-title>
+						<v-alert v-else-if="isGetPlayerDataError" type="error" outlined>
+							Failed to fetch player data. Please try again later.
+						</v-alert>
 						<div v-else>
 							<v-progress-circular indeterminate color="primary" class="mx-auto my-2 ml-4 mr-4"></v-progress-circular>
 							Loading player data...
@@ -299,6 +314,9 @@ watch(() => [isVictory.value], getPlayerRecords);
 								</div>	
 							</div>	
 						</v-card-text>
+						<v-alert v-else-if="isGetPlayerStatsError" type="error" outlined>
+							Failed to fetch player stats. Please try again later.
+						</v-alert>
 						<div v-else>
 							<v-progress-circular indeterminate color="primary" class="mx-auto my-2 ml-4 mr-4"></v-progress-circular>
 							Loading player stats...
@@ -318,6 +336,9 @@ watch(() => [isVictory.value], getPlayerRecords);
 			hide-details="auto"
 		/>
 		<RecordTable :records="records" v-if="records.length>0" />
+		<v-alert v-else-if="isGetPlayerRecordsError" type="error" outlined class="mb-4">
+			Failed to fetch records. Please try again later.
+		</v-alert>
 		<div v-else>
 			<v-progress-circular indeterminate color="primary" class="mx-auto my-4 mr-4"></v-progress-circular>
 			Loading records...

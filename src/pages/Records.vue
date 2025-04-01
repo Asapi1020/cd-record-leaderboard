@@ -19,6 +19,7 @@ const records = ref<Record[]>([]);
 const totalRecordsNum = ref<number>(0);
 const isLoading = ref<boolean>(false);
 const isVictory = ref<boolean>(false);
+const errorMessage = ref<string>("");
 
 const onPageChange = (newPage: number) => {
 	router.push({ query: { ...route.query, page: newPage } });
@@ -34,6 +35,7 @@ const getRecords = async () => {
 		[records.value, totalRecordsNum.value] = fetchedRecords;
 	} catch (error) {
 		console.error(error);
+		errorMessage.value = "Failed to fetch records. Please try again later.";
 	} finally {
 		isLoading.value = false;
 	}
@@ -59,6 +61,9 @@ watch([() => route.query.page, isVictory], getRecords);
                     color="primary"
                 ></v-progress-circular>
             </div>
+			<v-alert v-else-if="errorMessage" type="error" outlined class="mb-4">
+				{{ errorMessage }}
+			</v-alert>
 			<div v-else>
 				<v-container v-if="!mdAndUp">
 					<RecordCards :records="records" />

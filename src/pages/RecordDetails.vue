@@ -14,6 +14,7 @@ const route = useRoute();
 
 const record = ref<Record | null>(null);
 const playerData = ref<{ [key: string]: SteamAccount }>({});
+const errorMessage = ref<string>("");
 
 const getRecord = async () => {
 	record.value = null;
@@ -26,6 +27,7 @@ const getRecord = async () => {
 		record.value = await apiClient.getRecord(id);
 	} catch (error) {
 		console.error(error);
+		errorMessage.value = "Failed to fetch record. Please try again later.";
 	}
 };
 
@@ -37,6 +39,7 @@ const getPlayerData = async (steamIDs: string[]) => {
 		}
 	} catch (error) {
 		console.error(error);
+		errorMessage.value = "Failed to fetch player data. Please try again later.";
 	}
 };
 
@@ -324,9 +327,12 @@ onMounted(async () => {
 				</v-col>
 			</v-row>
         </v-container>
-        <v-container v-else>
+        <v-container v-else-if="!errorMessage" class="d-flex justify-center my-4">
             <v-progress-circular indeterminate color="primary" class="mx-auto my-4"></v-progress-circular>
         </v-container>
+		<v-alert v-else-if="errorMessage" type="error" outlined class="mb-4">
+			{{ errorMessage }}
+		</v-alert>
 	</v-main>
 </template>
 
