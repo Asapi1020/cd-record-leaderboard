@@ -67,7 +67,6 @@ export class CDAPIClient {
 		page: number,
 		isVictory: boolean,
 	): Promise<[Record[], number]> {
-		console.log(steamID, page, isVictory);
 		const response = await this.get(
 			`/v2/users/${steamID}/records?page=${page}` +
 				`${isVictory ? "&isVictory=true" : ""}`,

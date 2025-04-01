@@ -4,7 +4,7 @@ import {
 	perkData,
 	resolveWeaponData,
 	resolveZedData,
-} from "@this/lib/kfClassNameResolver";
+} from "@this/lib/domain/kf";
 import type { Record, SteamAccount } from "@this/lib/type";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";

@@ -2,9 +2,9 @@
 import { toString as convertToString } from "@asp1020/type-utils";
 import { CDAPIClient } from "@this/lib/apiClient";
 import { throwInvalidParameterError } from "@this/lib/domain/ErrorHandler";
-import { perkData } from "@this/lib/kfClassNameResolver";
+import { PERK_LIST, perkData } from "@this/lib/domain/kf";
 import type { Record, SteamAccount, UserStats } from "@this/lib/type";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useDisplay } from "vuetify/lib/framework.mjs";
 import RecordTable from "../components/RecordTable.vue";
@@ -81,6 +81,14 @@ const setupStats = () => {
 	);
 };
 
+const orderedPerks = computed(() => {
+	return PERK_LIST.map((perk) =>
+		Object.keys(statsForEachPerk.value).find(
+			(key) => key.toLowerCase() === perk.toLowerCase(),
+		),
+	).filter((perk) => perk !== undefined);
+});
+
 const onPageChange = (newPage: number) => {
 	page.value = newPage;
 	getPlayerRecords();
@@ -129,7 +137,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 									<tr>
 										<th>PERK</th>
 										<th>TOTAL</th>
-										<th v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="centered">
+										<th v-for="perkClass in orderedPerks" :key="perkClass" class="centered">
 											<img :src="perkData[perkClass.toLowerCase()][1]" :alt="perkClass" class="inline-image">
 										</th>
 									</tr>
@@ -140,7 +148,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 										<td class="number">
 											{{ stats.reduce((sum, stat) => sum + stat.damageDealt, 0).toLocaleString() }}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.damageDealt, 0).toLocaleString() }}
 										</td>
 									</tr>
@@ -149,7 +157,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 										<td class="number">
 											{{ stats.reduce((sum, stat) => sum + stat.damageTaken, 0).toLocaleString() }}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.damageTaken, 0).toLocaleString() }}
 										</td>
 									</tr>
@@ -158,7 +166,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 										<td class="number">
 											{{ stats.reduce((sum, stat) => sum + stat.healsGiven, 0).toLocaleString() }}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.healsGiven, 0).toLocaleString() }}
 										</td>
 									</tr>
@@ -167,7 +175,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 										<td class="number">
 											{{ stats.reduce((sum, stat) => sum + stat.healsReceived, 0).toLocaleString() }}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.healsReceived, 0).toLocaleString() }}
 										</td>
 									</tr>
@@ -176,7 +184,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 										<td class="number">
 											{{ stats.reduce((sum, stat) => sum + stat.doshEarned, 0).toLocaleString() }}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.doshEarned, 0).toLocaleString() }}
 										</td>
 									</tr>
@@ -192,7 +200,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 														).toFixed(2) + "%"
 											}}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ 
 												statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.shotsFired, 0) === 0 
 													? "0%" 
@@ -214,7 +222,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 														).toFixed(2) + "%"
 											}}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ 
 												statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.shotsHit, 0) === 0 
 													? "0%" 
@@ -229,7 +237,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 										<td class="number">
 											{{ stats.reduce((sum, stat) => sum + stat.deaths, 0).toLocaleString() }}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ statsForEachPerk[perkClass].reduce((sum, stat) => sum + stat.deaths, 0).toLocaleString() }}
 										</td>
 									</tr>
@@ -238,7 +246,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 										<td class="number">
 											{{ stats.length.toLocaleString() }}
 										</td>
-										<td v-for="perkClass in Object.keys(statsForEachPerk)" :key="perkClass" class="number">
+										<td v-for="perkClass in orderedPerks" :key="perkClass" class="number">
 											{{ statsForEachPerk[perkClass].length.toLocaleString() }}
 										</td>
 									</tr>
