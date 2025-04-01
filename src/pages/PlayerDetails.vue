@@ -2,7 +2,7 @@
 import { toString as convertToString } from "@asp1020/type-utils";
 import { CDAPIClient } from "@this/lib/apiClient";
 import { throwInvalidParameterError } from "@this/lib/domain/ErrorHandler";
-import { PERK_LIST, perkData } from "@this/lib/domain/kf";
+import { PERK_LIST, perkColors, perkData } from "@this/lib/domain/kf";
 import type { Record, SteamAccount, UserStats } from "@this/lib/type";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -89,6 +89,30 @@ const orderedPerks = computed(() => {
 	).filter((perk) => perk !== undefined);
 });
 
+const usedCountOrderedPerks = computed(() => {
+	return Object.keys(statsForEachPerk.value)
+		.sort((a, b) => {
+			const aCount = statsForEachPerk.value[a].length;
+			const bCount = statsForEachPerk.value[b].length;
+			return bCount - aCount;
+		})
+		.slice(0, 6);
+});
+
+const usagePercentage = (perk: string) => {
+	const totalCount = stats.value.length;
+	const usedCount = statsForEachPerk.value[perk].length;
+	return totalCount > 0 ? (usedCount * 100) / totalCount : 0;
+};
+
+const otherPercentage = computed(() => {
+	const totalCount = stats.value.length;
+	const usedCount = usedCountOrderedPerks.value.reduce((acc, perk) => {
+		return acc + statsForEachPerk.value[perk].length;
+	}, 0);
+	return totalCount > 0 ? ((totalCount - usedCount) * 100) / totalCount : 0;
+});
+
 const onPageChange = (newPage: number) => {
 	page.value = newPage;
 	getPlayerRecords();
@@ -132,7 +156,7 @@ watch(() => [isVictory.value], getPlayerRecords);
 							Player Stats
 						</v-card-title>
 						<v-card-text v-if="stats.length>0">
-							<table>
+							<table class="mb-4">
 								<thead>
 									<tr>
 										<th>PERK</th>
@@ -252,6 +276,28 @@ watch(() => [isVictory.value], getPlayerRecords);
 									</tr>
 								</tbody>
 							</table>
+							<div class="perk-usage">
+								<span class="title mb-4">Most Used Perks</span>
+								<div class="bar-container">
+									<div
+										v-for="perk in usedCountOrderedPerks"
+										:key="perk"
+										class="bar-segment"
+										:style="{ width: `${usagePercentage(perk)}%`, backgroundColor: perkColors(perk) }"
+									></div>
+									<div
+										v-if="otherPercentage > 0"
+										class="bar-segment other"
+										:style="{ width: `${otherPercentage}%` }"
+									></div>
+								</div>
+								<div class="legend">
+									<div v-for="perk in usedCountOrderedPerks" :key="perk" class="legend-item">
+										<span class="legend-color" :style="{ backgroundColor: perkColors(perk) }"></span>
+										<span>{{ perkData[perk.toLowerCase()][0] }} ({{ usagePercentage(perk).toFixed(2) }}%)</span>
+									</div>
+								</div>	
+							</div>	
 						</v-card-text>
 						<div v-else>
 							<v-progress-circular indeterminate color="primary" class="mx-auto my-2 ml-4 mr-4"></v-progress-circular>
@@ -306,5 +352,53 @@ table td.number {
 
 .steam-link {
 	margin-left: auto;
+}
+
+.perk-usage {
+  max-width: 500px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  font-size: 18px;
+  color: #187700
+}
+
+.bar-container {
+  display: flex;
+  height: 10px;
+  background: #222;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.bar-segment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.bar-segment.other {
+  background: #999;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  color: #999
+}
+
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 8px;
+  margin-right: 5px;
+  display: inline-block;
 }
 </style>
