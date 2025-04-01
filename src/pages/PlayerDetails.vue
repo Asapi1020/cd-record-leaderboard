@@ -3,7 +3,13 @@ import { toString as convertToString } from "@asp1020/type-utils";
 import UsageBar from "@this/components/UsageBar.vue";
 import { CDAPIClient } from "@this/lib/apiClient";
 import { throwInvalidParameterError } from "@this/lib/domain/ErrorHandler";
-import { PERK_LIST, perkColors, perkData } from "@this/lib/domain/kf";
+import { COLOR_LIST } from "@this/lib/domain/color";
+import {
+	PERK_LIST,
+	perkColors,
+	perkData,
+	resolveWeaponData,
+} from "@this/lib/domain/kf";
 import type { Record, SteamAccount, UserStats } from "@this/lib/type";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -121,6 +127,44 @@ const usedCountOrderedPerks = computed(() => {
 			return bCount - aCount;
 		})
 		.slice(0, 6);
+});
+
+const damagesForEachWeapon = computed(() => {
+	return stats.value.reduce(
+		(acc, stat) => {
+			if (stat.weaponDamages) {
+				for (const weapon of stat.weaponDamages) {
+					const weaponName = resolveWeaponData(weapon.weaponDefClass).name;
+					if (!acc[weaponName]) {
+						acc[weaponName] = 0;
+					}
+					acc[weaponName] += weapon.damageAmount;
+				}
+			}
+			return acc;
+		},
+		{} as { [weaponName: string]: number },
+	);
+});
+
+const weaponUsages = computed(() => {
+	const sortedWeapons = Object.entries(damagesForEachWeapon.value)
+		.sort((a, b) => b[1] - a[1])
+		.slice(0, 6);
+	return sortedWeapons.map(([name, count], index) => {
+		return {
+			name,
+			count,
+			color: COLOR_LIST[index % COLOR_LIST.length],
+		};
+	});
+});
+
+const totalWeaponCount = computed(() => {
+	return Object.values(damagesForEachWeapon.value).reduce(
+		(acc, count) => acc + count,
+		0,
+	);
 });
 
 const onPageChange = (newPage: number) => {
@@ -289,7 +333,8 @@ watch(() => [isVictory.value], getPlayerRecords);
 									</tr>
 								</tbody>
 							</table>
-							<UsageBar title="Most Used Perks" :usages="perkUsages" :total="stats.length" />
+							<UsageBar title="Most Used Perks" :usages="perkUsages" :total="stats.length" class="mb-4" />
+							<UsageBar title="Most Damage Dealt Weapons" :usages="weaponUsages" :total="totalWeaponCount" />
 						</v-card-text>
 						<v-alert v-else-if="isGetPlayerStatsError" type="error" outlined>
 							Failed to fetch player stats. Please try again later.
