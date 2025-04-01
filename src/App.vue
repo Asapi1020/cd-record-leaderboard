@@ -2,7 +2,7 @@
 import * as labs from "vuetify/labs/components";
 import Header from "./components/Header.vue";
 import "./assets/global.scss";
-import { inject } from "@vercel/analytics/*";
+import { inject } from "@vercel/analytics";
 inject();
 export default {
 	name: "App",
