@@ -1,8 +1,4 @@
-import {
-	toRecord,
-	toRecordData,
-	toUserStatsArray,
-} from "./interface-adapters/record";
+import { toRecord, toRecordData, toUserStatsArray } from "./interface-adapters/record";
 import type { Record, SteamAccount, UserStats } from "./type";
 
 export class CDAPIClient {
@@ -46,13 +42,8 @@ export class CDAPIClient {
 		return [data.data, data.total];
 	}
 
-	public async getRecordsV2(
-		page: number,
-		isVictory: boolean,
-	): Promise<[Record[], number]> {
-		const response = await this.get(
-			`/v2/records?page=${page}` + `${isVictory ? "&isVictory=true" : ""}`,
-		);
+	public async getRecordsV2(page: number, isVictory: boolean): Promise<[Record[], number]> {
+		const response = await this.get(`/v2/records?page=${page}` + `${isVictory ? "&isVictory=true" : ""}`);
 		if (!response.ok) {
 			console.error(response);
 			throw new Error("HTTP Error");
@@ -62,14 +53,9 @@ export class CDAPIClient {
 		return [records, total];
 	}
 
-	public async getPlayersRecords(
-		steamID: string,
-		page: number,
-		isVictory: boolean,
-	): Promise<[Record[], number]> {
+	public async getPlayersRecords(steamID: string, page: number, isVictory: boolean): Promise<[Record[], number]> {
 		const response = await this.get(
-			`/v2/users/${steamID}/records?page=${page}` +
-				`${isVictory ? "&isVictory=true" : ""}`,
+			`/v2/users/${steamID}/records?page=${page}` + `${isVictory ? "&isVictory=true" : ""}`,
 		);
 		if (!response.ok) {
 			console.error(response);

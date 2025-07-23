@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { toString as convertToString } from "@asp1020/type-utils";
+import RecordTable from "@this/components/RecordTable.vue";
 import UsageBar from "@this/components/UsageBar.vue";
 import { CDAPIClient } from "@this/lib/apiClient";
-import { throwInvalidParameterError } from "@this/lib/domain/ErrorHandler";
 import { COLOR_LIST } from "@this/lib/domain/color";
+import { throwInvalidParameterError } from "@this/lib/domain/ErrorHandler";
 import {
 	PERK_LIST,
 	perkColors,
@@ -14,7 +15,6 @@ import type { Record, SteamAccount, UserStats } from "@this/lib/type";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useDisplay } from "vuetify/lib/framework.mjs";
-import RecordTable from "../components/RecordTable.vue";
 
 const apiClient = new CDAPIClient();
 const route = useRoute();
@@ -27,96 +27,27 @@ const PER_PAGE = 20;
 const playerData = ref<SteamAccount | null>(null);
 const isGetPlayerDataError = ref<boolean>(false);
 
-const getPlayerData = async () => {
-	try {
-		isGetPlayerDataError.value = false;
-		const steamID =
-			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
-		const fetchedPlayerData = await apiClient.getPlayerData([steamID]);
-		if (fetchedPlayerData.length === 0 || fetchedPlayerData[0].id !== steamID) {
-			throw new Error("Player not found");
-		}
-
-		playerData.value = fetchedPlayerData[0];
-	} catch (error) {
-		isGetPlayerDataError.value = true;
-		console.error(error);
-	}
-};
-
 const stats = ref<UserStats[]>([]);
-const isGetPlayerStatsError = ref<boolean>(false);
-
-const getPlayerStats = async () => {
-	try {
-		isGetPlayerStatsError.value = false;
-		const steamID =
-			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
-		const fetchedPlayerStats = await apiClient.getPlayerStats(steamID);
-		if (fetchedPlayerStats.length === 0) {
-			throw new Error("Player stats not found");
-		}
-		stats.value = fetchedPlayerStats;
-		setupStats();
-	} catch (error) {
-		console.error(error);
-		isGetPlayerStatsError.value = true;
-	}
-};
-
 const statsForEachPerk = ref<{ [perk: string]: UserStats[] }>({});
-const setupStats = () => {
-	statsForEachPerk.value = stats.value.reduce<{ [perk: string]: UserStats[] }>(
-		(acc, stat) => {
-			if (!acc[stat.perkClass]) {
-				acc[stat.perkClass] = [];
-			}
-			acc[stat.perkClass].push(stat);
-			return acc;
-		},
-		{},
-	);
-};
+const isGetPlayerStatsError = ref<boolean>(false);
 
 const records = ref<Record[]>([]);
 const totalRecordsNum = ref<number>(0);
 const isGetPlayerRecordsError = ref<boolean>(false);
 
-const getPlayerRecords = async () => {
-	try {
-		isGetPlayerRecordsError.value = false;
-		records.value = [];
-		const steamID =
-			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
-		const fetchedRecords = await apiClient.getPlayersRecords(
-			steamID,
-			page.value,
-			isVictory.value,
-		);
-		[records.value, totalRecordsNum.value] = fetchedRecords;
-	} catch (error) {
-		console.error(error);
-		isGetPlayerRecordsError.value = true;
-	}
-};
-
-const orderedPerks = computed(() => {
-	return PERK_LIST.map((perk) =>
-		Object.keys(statsForEachPerk.value).find(
-			(key) => key.toLowerCase() === perk.toLowerCase(),
-		),
-	).filter((perk) => perk !== undefined);
-});
-
 const perkUsages = computed(() => {
-	return usedCountOrderedPerks.value.map((perk) => {
-		const perkName = perk?.toLowerCase() ?? "";
-		return {
-			name: perkData[perkName][0],
-			count: statsForEachPerk.value[perk]?.length ?? 0,
-			color: perkColors(perkName),
-		};
-	});
+	return usedCountOrderedPerks.value
+		.map((perk) => {
+			const perkName = perk?.toLowerCase() ?? "";
+			const perkDatum = perkData[perkName];
+
+			return {
+				name: perkDatum ? perkDatum[0] : "",
+				count: statsForEachPerk.value[perk]?.length ?? 0,
+				color: perkColors(perkName),
+			};
+		})
+		.filter((usage) => usage.name !== "");
 });
 
 const usedCountOrderedPerks = computed(() => {
@@ -167,18 +98,94 @@ const totalWeaponCount = computed(() => {
 	);
 });
 
-const onPageChange = (newPage: number) => {
-	page.value = newPage;
-	getPlayerRecords();
-};
-
-onMounted(() => {
-	getPlayerData();
-	getPlayerStats();
-	getPlayerRecords();
+onMounted(async () => {
+	await Promise.all([getPlayerData(), getPlayerStats(), getPlayerRecords()]);
 });
 
-watch(() => [isVictory.value], getPlayerRecords);
+watch(
+	() => [isVictory.value],
+	async () => await getPlayerRecords(),
+);
+
+async function getPlayerData(): Promise<void> {
+	try {
+		isGetPlayerDataError.value = false;
+		const steamID =
+			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
+		const fetchedPlayerData = await apiClient.getPlayerData([steamID]);
+		if (fetchedPlayerData.length === 0 || fetchedPlayerData[0].id !== steamID) {
+			throw new Error("Player not found");
+		}
+
+		playerData.value = fetchedPlayerData[0];
+	} catch (error) {
+		isGetPlayerDataError.value = true;
+		console.error(error);
+	}
+}
+
+async function getPlayerStats(): Promise<void> {
+	try {
+		isGetPlayerStatsError.value = false;
+		const steamID =
+			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
+		const fetchedPlayerStats = await apiClient.getPlayerStats(steamID);
+
+		if (fetchedPlayerStats.length === 0) {
+			throw new Error("Player stats not found");
+		}
+
+		stats.value = fetchedPlayerStats;
+		setupStats();
+	} catch (error) {
+		console.error(error);
+		isGetPlayerStatsError.value = true;
+	}
+}
+
+function setupStats(): void {
+	statsForEachPerk.value = stats.value.reduce<{ [perk: string]: UserStats[] }>(
+		(acc, stat) => {
+			if (!acc[stat.perkClass]) {
+				acc[stat.perkClass] = [];
+			}
+			acc[stat.perkClass].push(stat);
+			return acc;
+		},
+		{},
+	);
+}
+
+async function getPlayerRecords(): Promise<void> {
+	try {
+		isGetPlayerRecordsError.value = false;
+		records.value = [];
+		const steamID =
+			convertToString(route.params.id) ?? throwInvalidParameterError("steamID");
+		const fetchedRecords = await apiClient.getPlayersRecords(
+			steamID,
+			page.value,
+			isVictory.value,
+		);
+		[records.value, totalRecordsNum.value] = fetchedRecords;
+	} catch (error) {
+		console.error(error);
+		isGetPlayerRecordsError.value = true;
+	}
+}
+
+const orderedPerks = computed(() => {
+	return PERK_LIST.map((perk) =>
+		Object.keys(statsForEachPerk.value).find(
+			(key) => key.toLowerCase() === perk.toLowerCase(),
+		),
+	).filter((perk) => perk !== undefined);
+});
+
+function onPageChange(newPage: number): void {
+	page.value = newPage;
+	getPlayerRecords();
+}
 </script>
 
 <template>
@@ -207,12 +214,13 @@ watch(() => [isVictory.value], getPlayerRecords);
 						</div>
 					</v-card>
 				</v-col>
+
 				<v-col cols="12">
 					<v-card>
 						<v-card-title>
 							Player Stats
 						</v-card-title>
-						<v-card-text v-if="stats.length>0">
+						<v-card-text v-if="stats.length > 0">
 							<table class="mb-4">
 								<thead>
 									<tr>
