@@ -1,3 +1,4 @@
+import { toNumber } from "@asp1020/type-utils";
 import { toRecord, toRecordData, toUserStatsArray } from "./interface-adapters/record";
 import type { Record, SteamAccount, UserStats } from "./type";
 
@@ -64,6 +65,36 @@ export class CDAPIClient {
 		const data = await response.json();
 		const [records, total] = toRecordData(data);
 		return [records, total];
+	}
+
+	public async getUsers(offset?: number, limit?: number): Promise<[(SteamAccount & {count: number})[], number]> {
+		const queryParams = [];
+		if (offset !== undefined) {
+			queryParams.push(`offset=${offset}`);
+		}
+		if (limit !== undefined) {
+			queryParams.push(`limit=${limit}`);
+		}
+
+		const response = await this.get(`/v2/users?${queryParams.join("&")}`);
+		if (!response.ok) {
+			console.error(response);
+			throw new Error("HTTP Error");
+		}
+
+		const { data } = await response.json();
+		const [users, total] = data;
+		const steamIDs = users.map((user: {count: number, steamID: string}) => user.steamID);
+		
+		const playerData = await this.getPlayerData(steamIDs);
+		const players = users.map((user: {count: number, steamID: string}) => {
+			const player = playerData.find((player) => player.id === user.steamID);
+			return {
+				...player,
+				count: user.count,
+			}
+		});
+		return [players, total];
 	}
 
 	public async getPlayerData(steamIDs: string[]): Promise<SteamAccount[]> {

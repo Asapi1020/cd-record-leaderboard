@@ -7,6 +7,11 @@
 				CD Record Leader Board
 			</router-link>
 		</template>
+
+		<v-tabs align-tabs="end">
+			<v-tab to="/records" prepend-icon="mdi-album">Records</v-tab>
+			<v-tab to="/players" prepend-icon="mdi-account">Players</v-tab>
+		</v-tabs>
 	</v-app-bar>
 </template>
 
